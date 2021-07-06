@@ -38,6 +38,22 @@ app.get("/api/workouts", (req, res) => {
     });
 });
 
+app.get("/api/workouts/range", (req, res) => {
+  db.Workout.aggregate([
+    {
+      $addFields: {
+        totalDuration: { $sum: "$exercises.duration" },
+      },
+    },
+  ])
+    .then((dbWorkout) => {
+      res.json(dbWorkout);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
 app.post("api/workout", ({ body }, res) => {
   db.Workout.create(body)
     .then((dbWorkout) => {
@@ -48,16 +64,24 @@ app.post("api/workout", ({ body }, res) => {
     });
 });
 
-//THIS IS AN UPDATE API
-// app.put("/api/workouts/:id", (req, res) => {
-//   db.Workout.find({ _id: mongojs.ObjectID(req.params.id) })
-//     .then((dbWorkout) => {
-//       res.json(dbWorkout);
-//     })
-//     .catch((err) => {
-//       res.json(err);
-//     });
-// });
+app.put("/api/workouts/:id", (req, res) => {
+  db.Workout.updateOne(
+    {
+      _id: req.params.id,
+    },
+    {
+      $push: {
+        exercises: req.body,
+      },
+    }
+  )
+    .then((dbWorkout) => {
+      res.json(dbWorkout);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}`);
