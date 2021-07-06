@@ -17,7 +17,7 @@ router.get("/workouts", (req, res) => {
     });
 });
 
-router.post("/workout", ({ body }, res) => {
+router.post("/workouts", ({ body }, res) => {
   db.Workout.create(body)
     .then((dbWorkout) => {
       res.json(dbWorkout);
@@ -28,7 +28,7 @@ router.post("/workout", ({ body }, res) => {
 });
 
 router.put("/workouts/:id", (req, res) => {
-  db.Workout.updateOne(
+  db.Workout.findByIdAndUpdate(
     {
       _id: req.params.id,
     },
@@ -36,6 +36,9 @@ router.put("/workouts/:id", (req, res) => {
       $push: {
         exercises: req.body,
       },
+    },
+    {
+      new: true,
     }
   )
     .then((dbWorkout) => {
@@ -51,6 +54,11 @@ router.get("/workouts/range", (req, res) => {
     {
       $addFields: {
         totalDuration: { $sum: "$exercises.duration" },
+      },
+    },
+    {
+      $sort: {
+        day: -1,
       },
     },
     { $limit: 7 },
