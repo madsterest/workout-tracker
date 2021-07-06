@@ -18,7 +18,8 @@
 
 
  # Useage
- This site is deployed at 
+ This site is deployed at https://fitness-online-tracker.herokuapp.com/
+ 
  
  ![Homepage](./Images/homepage.png)
  
